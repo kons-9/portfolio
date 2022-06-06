@@ -35,6 +35,12 @@ class Main extends React.Component {
         <span className="yellow">{dir}</span>
       </>
     );
+    this.tree = {
+      Documents: {
+        "about.kons": "hello konsh",
+      },
+      hello_konsh: {},
+    };
   }
 
   setTerminal(ind) {
@@ -65,13 +71,37 @@ class Main extends React.Component {
     return <span className="line_number">{num_string} </span>;
   }
   processCommand(command) {
+    const com = command.split(/\xa0+/).filter(Boolean);
+    // const com = command.split(" ");
+    console.log(com);
+    if (com.length === 0) {
+      return null;
+    }
     console.log(command);
-    return <>hello world</>;
+
+    if (com[0] === "hello_konsh") {
+      return [
+        "welcome to kons's portfolio",
+        "the apps made by kons are displayed in this site.",
+        "the list of this can be found by typing 'help --command'",
+        "ゆっくりしていってね!!!!",
+      ];
+    } else if (com[0] === "help" && com[1] === "--command") {
+      return [
+        "hello_konsh: expranation of this site.",
+        "osero: traditional game. you can play this terminal with option t.",
+        "push4: game like sannmoku. it is easy to understand the rule, but very interesting.",
+      ];
+    } else {
+      return "konsh: command not found: " + com[0];
+    }
   }
   addContents() {
     const pre_prompt = this.pre_prompt(this.dir);
 
-    const command = document.getElementById("input").innerHTML;
+    const command = document
+      .getElementById("input")
+      .innerHTML.replace(/&nbsp;/gi, "\xa0");
     document.getElementById("input").innerHTML = "";
     let output = this.processCommand(command);
     if (output === null) {
@@ -83,11 +113,9 @@ class Main extends React.Component {
       });
     } else {
       this.setState({
-        contents: this.state.contents.concat([
-          pre_prompt,
-          this.prompt + "\xa0" + command,
-          output,
-        ]),
+        contents: this.state.contents.concat(
+          [pre_prompt, this.prompt + "\xa0" + command].concat(output)
+        ),
       });
     }
   }
@@ -97,11 +125,18 @@ class Main extends React.Component {
       this.addContents();
     } else if (e.key === "Backspace" || (e.ctrlKey && e.key === "h")) {
       let input = document.getElementById("input").innerHTML;
-      document.getElementById("input").innerHTML = input.slice(0, -1);
+      // spaceだけ特殊文字を用いているため分岐
+      if (input.slice(0, 6) === "&nbsp;") {
+        document.getElementById("input").innerHTML = input.slice(0, -6);
+      } else {
+        document.getElementById("input").innerHTML = input.slice(0, -1);
+      }
     } else if (e.key.length === 1) {
       let char = e.key;
       if (e.shiftKey) {
         char = char.toUpperCase();
+      } else if (char === " ") {
+        char = "\xa0";
       }
       let input = document.getElementById("input").innerHTML;
       input += char;
@@ -126,11 +161,8 @@ class Main extends React.Component {
             {this.line_number(count + 1)}
             {this.prompt}&nbsp;
           </span>
-          <span className="not_prompt">
-            {/* <span className="green">hello_konsh </span> */}
-            <span id="input"></span>
-            <span className="cursor">&nbsp;</span>
-          </span>
+          <span id="input"></span>
+          <span className="cursor">&nbsp;</span>
         </p>
         <textarea
           className="command_line"
@@ -150,7 +182,7 @@ class Main extends React.Component {
       <div
         className="main_terminal"
         id="main_terminal"
-        onClick={this.focusEvent}
+        onClick={() => this.focusEvent()}
         style={{ height: height }}
       >
         {this.state.contents.map((content, ind) => (

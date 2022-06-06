@@ -1,4 +1,9 @@
 # kons's portfolio!
+(updated on Jun 6)
+
+## !! it is not completed !!
+
+it is my first time to make web site.  
 
 if you want to build in your local PC, please install scss and react and complie.
 

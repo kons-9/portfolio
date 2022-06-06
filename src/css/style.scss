@@ -99,7 +99,7 @@ body{
 }
 
 @keyframes blink {
-    0% {background: black;}
+    0% {background: $term_back;}
     100% {background: white;}
 }
 
