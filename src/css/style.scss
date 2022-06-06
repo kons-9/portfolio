@@ -1,0 +1,178 @@
+/* style.css */
+$fontsize: 12pt;
+$green:rgb(106, 220, 106);
+$red: rgb(255, 128, 128);
+$yellow: rgb(250, 250, 73);
+$term_back: rgb(39, 39, 39);
+$border_r: 12px;
+
+//////////////////
+// overall
+//////////////////
+
+*{
+	margin: 0;
+	padding: 0;
+}
+
+body, p, form, ul, ol, input, button{
+	font-size: $fontsize;
+}
+
+body{
+	width: 92%;
+	height: 92%;
+	margin: 4%;
+}
+
+///////////////////////
+// all terminal
+///////////////////////
+
+.terminal{
+    // border-radius: 15px;
+	font-family: Ubuntu Mono, Helvetica, '游ゴシック', 'メイリオ';
+	font-size: $fontsize;
+	color: white;
+    width: 100%;
+    height: 20%;
+    padding: 3px;
+
+	display: block;	
+	line-height: 1.4em;	
+    * {
+	    background-color: $term_back;
+    }
+}
+
+
+///////////////////////
+// terminal header
+///////////////////////
+.konsh_header {
+    font-size: 20px;
+    // margin: 10px;
+    padding: 10px;
+    text-align: center;
+    border-color: gray;
+    border: 3px;
+    border-radius: $border_r $border_r 0 0;
+
+}
+
+///////////////////////
+// line number
+///////////////////////
+
+.line_number {
+    color: gray;
+}
+
+///////////////////////
+// terminal main
+///////////////////////
+
+.main_terminal {
+    // margin :3px;
+    overflow: scroll;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+    counter-reset: line-number;
+
+    .displayed_area {
+        display: flex;
+        height: auto;
+        .line_number {
+            overflow: unset;
+        }
+        .displayed {
+        }
+    }
+}
+
+// input zone
+
+.cursor {
+    width: 1pt;
+    animation: blink 1.0s  steps(2) infinite;
+}
+
+@keyframes blink {
+    0% {background: black;}
+    100% {background: white;}
+}
+
+.command_line {
+    resize: none;
+    width: 0;
+    height: 0;
+    position: absolute;
+    top: -1000px;
+    right: -1000px;
+}
+
+//////////////////////////
+// terminal footer
+//////////////////////////
+#konsh_footer {
+    padding: 3px;
+    border-radius: 0 0 $border_r $border_r ;
+    background-color: $term_back;
+}
+
+//////////////////////////
+// status bar
+//////////////////////////
+
+.status_bar {
+    display: flex;
+    height: 20px;
+    width: 100%;
+    * {
+        padding-left: $fontsize;
+        padding-right: $fontsize;
+        display: inline-block;
+    }
+}
+.sta_1, .sta_5 {
+    color: black;
+    background-color: rgb(0, 183, 255);
+}
+.sta_2, .sta_4 {
+    color: white;
+    background-color: gray;
+}
+.sta_3 {
+    margin-left: auto;
+    color: white;
+    background-color: $term_back;
+}
+.sta_1, .sta_2 {
+    text-align: center;
+}
+.sta_4, .sta_5 {
+    text-align: right;
+}
+
+/////////////////////
+// command bar
+/////////////////////
+
+.command_bar { 
+    color: white;
+}
+
+////////////////////
+// color class
+////////////////////
+
+.green {
+    color: $green;
+}
+.red {
+    color: $red;
+}
+.yellow {
+    color: $yellow;
+}
