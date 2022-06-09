@@ -1,0 +1,33 @@
+[
+    {
+        "User": {
+            "Filetype": [
+                {
+                    "Guest": [],
+                    "Shared": [],
+                    "kons": [
+                        {
+                            "Desktop": [
+                                "hello.txt",
+                                "about.txt",
+                                {
+                                    "screenshot": [
+                                        "hello.png"
+                                    ]
+                                }
+                            ],
+                            "Documents": [],
+                            "Downloads": []
+                        }
+                    ]
+                }
+            ],
+            "auth": {
+                "group": 7,
+                "other": 7,
+                "owner": 7
+            },
+            "name": "User"
+        }
+    }
+]
