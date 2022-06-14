@@ -43,7 +43,7 @@ class Main extends React.Component {
       hello_konsh: {},
     };
     init().then(() => {
-      console.log(add());
+      //   console.log(add());
     });
   }
 
