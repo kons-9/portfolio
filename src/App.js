@@ -1,5 +1,6 @@
 import React from "react";
 import "./css/style.scss";
+import init, { add } from "portfolio";
 
 function Header() {
   return <div className="konsh_header">Welcome to kons's portfolio!</div>;
@@ -41,22 +42,35 @@ class Main extends React.Component {
       },
       hello_konsh: {},
     };
+    init().then(() => {
+      console.log(add());
+    });
   }
 
   setTerminal(ind) {
     const terminal = document.getElementById("main_terminal");
+    // const body = document.body;
     let innerHeight = window.innerHeight;
-    terminal.style.height = innerHeight - 150 + "px";
+    terminal.style.height = innerHeight;
+    // body.style.height = innerHeight;
   }
 
   componentDidMount() {
-    const func = this.setTerminal;
-    window.addEventListener("resize", func);
+    window.addEventListener("resize", () => {
+      this.setTerminal();
+    });
+    const cursor = document.getElementById("cursor").classList;
+    document.getElementById("command_line").addEventListener("focus", () => {
+      cursor.add("active");
+    });
+    document.getElementById("command_line").addEventListener("blur", () => {
+      cursor.remove("active");
+    });
   }
 
   componentDidUpdate() {
-    let main_terminal = document.getElementById("main_terminal");
-    document.getElementById("main_terminal").scrollTop =
+    const main_terminal = document.getElementById("main_terminal");
+    main_terminal.scrollTop =
       main_terminal.scrollHeight - main_terminal.offsetHeight;
   }
 
@@ -73,25 +87,78 @@ class Main extends React.Component {
   processCommand(command) {
     const com = command.split(/\xa0+/).filter(Boolean);
     // const com = command.split(" ");
-    console.log(com);
     if (com.length === 0) {
       return null;
     }
-    console.log(command);
 
     if (com[0] === "hello_konsh") {
       return [
-        "welcome to kons's portfolio",
-        "the apps made by kons are displayed in this site.",
-        "the list of this can be found by typing 'help --command'",
+        "Welcome to kons's portfolio:)",
+        "Application made by kons are displayed in this site.",
         "ゆっくりしていってね!!!!",
+        "",
+        "(The list of command can be found by typing 'help command')",
       ];
-    } else if (com[0] === "help" && com[1] === "--command") {
-      return [
-        "hello_konsh: expranation of this site.",
-        "osero: traditional game. you can play this terminal with option t.",
-        "push4: game like sannmoku. it is easy to understand the rule, but very interesting.",
-      ];
+    } else if (com[0] === "github") {
+      return (
+        <>
+          Please open{" "}
+          <a
+            href="https://github.com/kons-9"
+            target={"_blank"}
+            rel="noreferrer noopener"
+            style={{ color: "white" }}
+          >
+            https://github.com/kons-9
+          </a>
+        </>
+      );
+    } else if (com[0] === "clear") {
+      return "clear";
+    } else if (com[0] === "help") {
+      if (com[1] === "command") {
+        const command_list = [
+          "hello_konsh",
+          "github",
+          "osero",
+          "push4",
+          "cd, ls, cat, clear",
+        ];
+        const explanation = [
+          "explanation of this site.",
+          "diplay url of my github page.",
+          "traditional game. you can play this in terminal with option '-t'.(todo)",
+          "game like sannmoku. it is easy to understand the rule, but very interesting.(todo)",
+          "it behaves like normal terminal.(todo)",
+        ];
+
+        let max_len = command_list.reduce(
+          (acc, elm) => Math.max(acc, elm.length),
+          0
+        );
+        return command_list.map((content, ind) => (
+          <>
+            <span
+              className="yellow"
+              style={{ display: "inline-block", width: max_len * 6 + 1 + "pt" }}
+            >
+              {content}
+            </span>
+            : {explanation[ind]}
+          </>
+        ));
+      } else if (com.length === 1) {
+        return [
+          //   "What help do you want?",
+          "usage: help <something>",
+          "(You are available 'command' in <something> now)",
+        ];
+      } else {
+        return (
+          "help: invalid options: " +
+          com.slice(1).reduce((acc, elm) => acc + " " + elm, "")
+        );
+      }
     } else {
       return "konsh: command not found: " + com[0];
     }
@@ -111,6 +178,10 @@ class Main extends React.Component {
           this.prompt + "\xa0" + command,
         ]),
       });
+    } else if (output === "clear") {
+      this.setState({
+        contents: [],
+      });
     } else {
       this.setState({
         contents: this.state.contents.concat(
@@ -121,28 +192,47 @@ class Main extends React.Component {
   }
 
   updateContent(e) {
+    console.log(e.key);
     if (e.key === "Enter") {
+      // confirm input
       this.addContents();
     } else if (e.key === "Backspace" || (e.ctrlKey && e.key === "h")) {
+      // delete char
       let input = document.getElementById("input").innerHTML;
       // spaceだけ特殊文字を用いているため分岐
-      if (input.slice(0, 6) === "&nbsp;") {
+      if (input.slice(-6) === "&nbsp;") {
         document.getElementById("input").innerHTML = input.slice(0, -6);
       } else {
         document.getElementById("input").innerHTML = input.slice(0, -1);
       }
+      // cursor blink reset
+      let cursor = document.getElementById("cursor");
+      cursor.classList.remove("active");
+      void cursor.offsetWidth;
+      cursor.classList.add("active");
     } else if (e.key.length === 1) {
+      // input char
       let char = e.key;
       if (e.shiftKey) {
+        // change capital letter
         char = char.toUpperCase();
       } else if (char === " ") {
+        // change valid space
         char = "\xa0";
       }
+
       let input = document.getElementById("input").innerHTML;
       input += char;
       document.getElementById("input").innerHTML = input;
+
+      // cursor blink reset
+      let cursor = document.getElementById("cursor");
+      cursor.classList.remove("active");
+      void cursor.offsetWidth;
+      cursor.classList.add("active");
     }
   }
+
   focusEvent() {
     let main_terminal = document.getElementById("main_terminal");
     main_terminal.scrollTop =
@@ -162,7 +252,7 @@ class Main extends React.Component {
             {this.prompt}&nbsp;
           </span>
           <span id="input"></span>
-          <span className="cursor">&nbsp;</span>
+          <span id="cursor">&nbsp;</span>
         </p>
         <textarea
           className="command_line"
@@ -186,7 +276,7 @@ class Main extends React.Component {
         style={{ height: height }}
       >
         {this.state.contents.map((content, ind) => (
-          <div className="displayed_area">
+          <div className="displayed_area" key={ind}>
             <p>
               {this.line_number(ind)}
               {content}

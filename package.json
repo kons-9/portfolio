@@ -1,4 +1,5 @@
 {
+    "homepage": "https://kons-9.github.io/portfolio",
   "name": "portfolio",
   "version": "0.1.0",
   "private": true,
@@ -7,17 +8,36 @@
     "@testing-library/react": "^13.3.0",
     "@testing-library/user-event": "^13.5.0",
     "node": "^17.7.2",
+    "portfolio": "file:wasm/wasm-build",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
-    "react-scripts": "5.0.1",
+    "react-scripts": "^5.0.1",
     "sass": "^1.52.2",
     "web-vitals": "^2.1.4"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.16.4",
+    "@babel/preset-react": "^7.16.0",
+    "@webpack-cli/serve": "^1.6.1",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^8.2.3",
+    "gh-pages": "^4.0.0",
+    "html-webpack-plugin": "^5.5.0",
+    "react-app-rewired": "^2.2.1",
+    "wasm-loader": "^1.3.0",
+    "webpack": "^5.73.0",
+    "webpack-cli": "^4.9.2",
+    "webpack-dev-server": "^4.9.2"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "build:wasm": "cd wasm && wasm-pack build --target web --out-dir wasm-build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "dev": "webpack server",
+    "predeploy":"npm run build",
+    "deploy":"gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [
