@@ -42,9 +42,9 @@ class Main extends React.Component {
       },
       hello_konsh: {},
     };
-    init().then(() => {
-      //   console.log(add());
-    });
+    // init().then(() => {
+    //   console.log(add());
+    // });
   }
 
   setTerminal(ind) {
