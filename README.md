@@ -1,5 +1,6 @@
 # kons's portfolio!
 (updated on Jun 6)
+https://kons-9.github.io/portfolio/
 
 ## !! it is not completed !!
 
