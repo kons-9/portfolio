@@ -1,3 +1,4 @@
+use regex::Regex;
 use std::collections::HashMap;
 
 pub struct Parser<'a> {
@@ -8,16 +9,19 @@ pub struct Parser<'a> {
 
 impl<'a> Parser<'a> {
     pub fn new(command_str: &'a str) -> Self {
-        let mut iter = command_str.split_ascii_whitespace();
-        let command;
+        let re = Regex::new(r"(\xa0)+").unwrap();
+
+        let mut iter = re.split(command_str).filter(|x| x != &"");
         let mut options = HashMap::<&str, Option<&str>>::new();
         let mut sub_command = Vec::<&str>::new();
         let mut pre_option: Option<&str> = None;
-        if let Some(name) = iter.next() {
-            command = name;
+        let command = if let Some(name) = iter.next() {
+            name
+        } else if let Some(name) = iter.next() {
+            name
         } else {
             panic!("invalid command");
-        }
+        };
         for val in iter {
             if val.starts_with("--") {
                 // long options

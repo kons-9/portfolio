@@ -41,7 +41,7 @@ impl FileAuthority {
 }
 
 impl FileInfo {
-    fn new(ftype: Filetype, name: String, path: PathBuf) -> Self {
+    fn new(name: String, ftype: Filetype, path: PathBuf) -> Self {
         return FileInfo {
             name,
             ftype,
@@ -61,15 +61,54 @@ impl FileInfo {
         }
         infos
     }
+    fn mkdir(&mut self, name: impl Into<String>) -> Result<(), String> {
+        let name = name.into();
+        match &mut self.ftype {
+            Filetype::Dir(x) => {
+                for file in x.iter() {
+                    if file.name == name {
+                        return Err(format!("{}: File exists", name));
+                    }
+                }
+                let path = self.path.clone().join(&name);
+                Ok(x.push(Rc::new(FileInfo::new(
+                    name,
+                    Filetype::Dir(Vec::new()),
+                    path,
+                ))))
+            }
+            x => panic!("current position must be 'directory', but {:?}", x),
+        }
+    }
+    fn cd(&self, name: impl Into<String>) -> Result<Rc<FileInfo>, String> {
+        let name = name.into();
+        match &self.ftype {
+            Filetype::Dir(x) => {
+                for file in x.iter() {
+                    if file.name == name {
+                        return Ok(file.clone());
+                    }
+                }
+            }
+            x => panic!("current position must be 'directory', but {:?}", x),
+        }
+        Err(format!("{}: File exists", name))
+    }
 }
 
 impl FileTree {
     pub fn new() -> Self {
+        let home = Filetype::Dir(Vec::new());
+
         let root = Rc::new(FileInfo::new(
-            Filetype::Dir(Vec::new()),
             "root".to_string(),
+            Filetype::Dir(Vec::new()),
             PathBuf::from("/"),
         ));
+        // root.mkdir("usr");
+        // root.mkdir("bin");
+        // root.mkdir("User");
+        // root.mkdir("");
         let pwd = root.clone();
         let home = root.clone();
 
@@ -91,39 +130,4 @@ impl FileTree {
         }
         None
     }
-
-    // pub fn cd(mut self, path: &PathBuf) {
-    //     let pwd_files;
-    //     if path.as_bytes()[0] == b'/' {
-    //         // todo
-    //         pwd_files = FileInfo::ls(self.root.clone());
-    //     } else {
-    //         pwd_files = FileInfo::ls(self.pwd.clone());
-    //     }
-
-    //     let mut flag = false;
-    //     for file in pwd_files {
-    //         if let Filetype::Dir(_) = file.ftype {
-    //             if file.name == path {
-    //                 flag = true;
-    //                 self.pwd = file.clone();
-    //                 println!("{:?}", self.pwd);
-    //                 return;
-    //             }
-    //         }
-    //     }
-    //     println!("not found");
-    // }
-}
-
-#[test]
-fn ls_test() {
-    let info = FileInfo::new(Filetype::File, "hello".to_string(), PathBuf::new());
-    // info.ls();
-}
-
-#[test]
-fn make_sample() {
-    let output_path = "sample/sample.json";
-    let mut tree = FileTree::new();
 }
