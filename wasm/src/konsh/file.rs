@@ -2,7 +2,7 @@ use std::{path::PathBuf, rc::Rc};
 #[derive(Debug, Clone)]
 enum Filetype {
     File,
-    Dir(Option<Vec<Rc<FileInfo>>>),
+    Dir(Vec<Rc<FileInfo>>),
     Symboric(Rc<FileInfo>),
 }
 #[derive(Debug, Clone)]
@@ -16,16 +16,16 @@ struct FileAuthority {
 struct Authority(u8);
 
 #[derive(Debug, Clone)]
-struct FileInfo {
-    name: String,
+pub struct FileInfo {
+    pub name: String,
     ftype: Filetype,
     auth: FileAuthority,
-    path: PathBuf,
+    pub path: PathBuf,
 }
 
 #[derive(Debug, Clone)]
 pub struct FileTree {
-    pwd: Rc<FileInfo>,
+    pub pwd: Rc<FileInfo>,
     root: Rc<FileInfo>,
     home: Rc<FileInfo>,
 }
@@ -51,11 +51,9 @@ impl FileInfo {
     }
     fn ls(fileinfo: Rc<FileInfo>) -> Vec<Rc<FileInfo>> {
         // let to_self = Rc::new(self);
-
-        let infos = match fileinfo.ftype.clone() {
+        let infos: Vec<Rc<FileInfo>> = match fileinfo.ftype {
             Filetype::File => vec![fileinfo.clone()],
-            Filetype::Dir(Some(v)) => v.clone(),
-            Filetype::Dir(None) => Vec::new(),
+            Filetype::Dir(ref v) => v.iter().map(|x| x.clone()).collect(),
             Filetype::Symboric(_) => vec![fileinfo.clone()],
         };
         for info in &infos {
@@ -68,7 +66,7 @@ impl FileInfo {
 impl FileTree {
     pub fn new() -> Self {
         let root = Rc::new(FileInfo::new(
-            Filetype::Dir(Option::None),
+            Filetype::Dir(Vec::new()),
             "root".to_string(),
             PathBuf::from("/"),
         ));
@@ -82,6 +80,16 @@ impl FileTree {
     }
     fn dir_to_dir(from_dir: PathBuf, to_dir: PathBuf) -> Vec<FileInfo> {
         Vec::new()
+    }
+    pub fn find_current_dir(&self, name: &str) -> Option<Rc<FileInfo>> {
+        let pwd = self.pwd.clone();
+        let infos = FileInfo::ls(pwd);
+        for info in infos {
+            if name == info.name {
+                return Some(info);
+            }
+        }
+        None
     }
 
     // pub fn cd(mut self, path: &PathBuf) {

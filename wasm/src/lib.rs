@@ -2,9 +2,10 @@ use std::{fmt::format, fs::File};
 
 use std::path::PathBuf;
 use wasm_bindgen::prelude::*;
-mod file;
-use file::FileTree;
 mod konsh;
+mod style;
+use konsh::file::FileTree;
+use style::Style;
 
 #[wasm_bindgen]
 extern "C" {
